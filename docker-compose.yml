@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  api:
+    build: app
+    container_name: chatbot-api
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app  # Mount toàn bộ thư mục gốc vào /app trong container
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - db
+    networks:
+      - chatbot-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  db:
+    image: postgres:14
+    container_name: chatbot-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chatbot-network
+volumes:
+  postgres_data:
+networks:
+  chatbot-network:
+    driver: bridge
