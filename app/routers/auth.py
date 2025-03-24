@@ -37,7 +37,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     return user_controller.create_user(user)
 
 
-@router.post("/token", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user_controller = UserController(db)
     user = user_controller.authenticate(form_data.username, form_data.password)
@@ -76,30 +76,30 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
 
-@router.put("/me", response_model=UserResponse)
-async def update_user_me(user_data: UserUpdate,
-                         current_user: User = Depends(get_current_active_user),
-                         db: Session = Depends(get_db)):
-    user_controller = UserController(db)
-
-    # Kiểm tra xem username mới đã tồn tại chưa (nếu có)
-    if user_data.username and user_data.username != current_user.username:
-        existing_user = user_controller.get_user_by_username(user_data.username)
-        if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already exists"
-            )
-
-    # Kiểm tra xem email mới đã tồn tại chưa (nếu có)
-    if user_data.email and user_data.email != current_user.email:
-        existing_email = user_controller.get_user_by_email(user_data.email)
-        if existing_email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already exists"
-            )
-
-    # Cập nhật thông tin người dùng
-    updated_user = user_controller.update_user(current_user.id, user_data)
-    return updated_user
+# @router.put("/me", response_model=UserResponse)
+# async def update_user_me(user_data: UserUpdate,
+#                          current_user: User = Depends(get_current_active_user),
+#                          db: Session = Depends(get_db)):
+#     user_controller = UserController(db)
+#
+#     # Kiểm tra xem username mới đã tồn tại chưa (nếu có)
+#     if user_data.username and user_data.username != current_user.username:
+#         existing_user = user_controller.get_user_by_username(user_data.username)
+#         if existing_user:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="Username already exists"
+#             )
+#
+#     # Kiểm tra xem email mới đã tồn tại chưa (nếu có)
+#     if user_data.email and user_data.email != current_user.email:
+#         existing_email = user_controller.get_user_by_email(user_data.email)
+#         if existing_email:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="Email already exists"
+#             )
+#
+#     # Cập nhật thông tin người dùng
+#     updated_user = user_controller.update_user(current_user.id, user_data)
+#     return updated_user

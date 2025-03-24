@@ -2,7 +2,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import conversation, prompt, auth, lesson, chat
+from app.routers import chat_controller, chat_controller_theory
 from app.models.models import init_db
+from app.models.chat_model import ChatHistory
+
 
 # Khởi tạo FastAPI
 app = FastAPI(
@@ -22,10 +25,12 @@ app.add_middleware(
 
 # Đăng ký routers
 app.include_router(auth.router)
-app.include_router(chat.router)
-app.include_router(conversation.router)
+# app.include_router(chat.router)
+# app.include_router(conversation.router)
 app.include_router(lesson.router)
-app.include_router(prompt.router)  # Thêm router quản lý prompt
+
+app.include_router(chat_controller.router)
+app.include_router(chat_controller_theory.router)
 
 # Khởi tạo database khi khởi động
 @app.on_event("startup")

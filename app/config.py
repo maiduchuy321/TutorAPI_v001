@@ -1,7 +1,10 @@
 import os
 from pydantic_settings import BaseSettings
 from typing import Optional
+from app.utils.reflection import Reflection
 
+# Tạo instance của Reflection
+REFLECTION = Reflection()
 
 class Settings(BaseSettings):
     """Cấu hình ứng dụng sử dụng Pydantic"""
@@ -13,12 +16,18 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRES_MINUTES: int = 60 * 24  # 24 giờ
 
+
+    # LLM Config
     # OpenAI
     OPENAI_API_KEY: Optional[str] = os.environ.get("OPENAI_API_KEY")
     OPENAI_MODEL: str = "LLama-3.3-70B-Instruct"
+    MAX_TOKEN: int = 500
     OPENAI_API_URL: str = os.environ.get("FPT_API_URL", "https://api.fpt.ai/nlp/llm/api/v1")
 
 
+
+
+    #Langfuse
     LANGFUSE_SECRET_KEY : Optional[str] = os.environ.get("LANGFUSE_SECRET_KEY")
     LANGFUSE_PUBLIC_KEY : Optional[str] = os.environ.get("LANGFUSE_PUBLIC_KEY")
     LANGFUSE_HOST : str = os.environ.get("LANGFUSE_HOST")

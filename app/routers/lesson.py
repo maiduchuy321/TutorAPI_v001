@@ -48,7 +48,7 @@ async def get_lesson(
 ):
     lesson_controller = LessonController(db)
     lesson = lesson_controller.get_lesson(lesson_id)
-
+    print(lesson)
     if not lesson:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
