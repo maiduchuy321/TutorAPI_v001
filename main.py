@@ -27,10 +27,10 @@ app.add_middleware(
 app.include_router(auth.router)
 # app.include_router(chat.router)
 # app.include_router(conversation.router)
-app.include_router(lesson.router)
 
 app.include_router(chat_controller.router)
 app.include_router(chat_controller_theory.router)
+app.include_router(lesson.router)
 
 # Khởi tạo database khi khởi động
 @app.on_event("startup")

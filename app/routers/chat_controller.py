@@ -36,6 +36,12 @@ def get_chat_history(session_id: str) -> ChatHistory:
 async def handle_message(session_id: str, message: MessageRequest):
     """
     Xử lý tin nhắn người dùng và trả về phản hồi từ LLM.
+
+    Args:
+        - **content**: Nội dung tin nhắn
+
+    Returns:
+        MessageResponse: Tin nhắn đã được tạo
     """
     start_time = datetime.now()
     query = message.content
@@ -72,6 +78,14 @@ async def handle_message(session_id: str, message: MessageRequest):
 
 @router.get("/{session_id}/history", response_model=ChatHistoryResponse)
 async def get_history(session_id: str):
-    """Lấy lịch sử chat"""
+    """
+    Lấy chi tiết một cuộc hội thoại theo session_id.
+
+    Args:
+        - **session_id (int)**: ID cuộc hội thoại
+
+    Returns:
+        ConversationResponse: Chi tiết cuộc hội thoại
+    """
     chat_history = get_chat_history(session_id)
     return ChatHistoryResponse(messages=chat_history.get_history())

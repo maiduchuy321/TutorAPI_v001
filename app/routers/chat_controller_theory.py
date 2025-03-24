@@ -59,6 +59,13 @@ def get_lesson_content_by_id(lesson_id, db):
 async def handle_message(session_id: str, message: MessageRequest, db: Session = Depends(get_db)):
     """
     Xử lý tin nhắn người dùng và trả về phản hồi từ LLM.
+
+    Args:
+        - **content**: Nội dung tin nhắn
+        - **lesson_id**: ID của bài học muốn hỏi
+
+    Returns:
+        MessageResponse: Tin nhắn đã được tạo
     """
     start_time = datetime.now()
 

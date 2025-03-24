@@ -18,6 +18,13 @@ router = APIRouter(
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
+    """
+    Tạo một tài khoản mới.
+    - **email**: Nhập vào email của bạn
+    - **username**: Nhập vào username
+    - **password**: Nhập vào password
+    """
+
     user_controller = UserController(db)
 
     # Kiểm tra xem username hoặc email đã tồn tại chưa
@@ -39,6 +46,16 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    Đăng nhập với username và password
+
+    Args:
+        - **username**: Tên tài khoản
+        - **password**: Tên mật khẩu
+    Returns:
+        Access Token: access_token
+    """
+
     user_controller = UserController(db)
     user = user_controller.authenticate(form_data.username, form_data.password)
 
@@ -73,6 +90,15 @@ async def logout(request: Request, db: Session = Depends(get_db),
 
 @router.get("/me", response_model=UserResponse)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
+    """
+    Lấy thông tin người dùng hiện tại.
+
+
+    Returns:
+        UserResponse: Thông tin người dùng
+    """
+
+
     return current_user
 
 
