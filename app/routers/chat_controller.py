@@ -3,6 +3,7 @@ from starlette.websockets import WebSocketState
 from datetime import datetime
 from typing import Dict, List, Any
 
+from app.controllers.qa_message_controller import progress_message
 from app.models.chat_model import ChatHistory
 from app.schemas.responses import MessageRequest, MessageResponse, ChatHistoryResponse
 from app.controllers.llm_service import generate_response, process_stream
@@ -46,25 +47,7 @@ async def handle_message(session_id: str, message: MessageRequest):
     start_time = datetime.now()
     query = message.content
 
-    # Lấy chat history
-    chat_history = get_chat_history(session_id)
-    chat_history.add_message("user", query)
-
-    # Tạo prompt
-    history = chat_history.get_history()
-    latest_history = REFLECTION(history, last_items_considered=8)
-    prompt = AITutorPrompt(history=latest_history).format()
-
-    # Gọi LLM API
-    stream = generate_response(prompt)
-
-    # Xử lý phản hồi
-    response_text = ""
-    response_text += process_stream(stream)
-
-
-    # Cập nhật lịch sử
-    chat_history.add_message("Assistant", response_text)
+    progress_message(session_id,query)
 
     # Tính thời gian xử lý
     end_time = datetime.now()

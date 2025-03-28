@@ -9,7 +9,7 @@ class LessonBase(BaseModel):
 
 
 class LessonCreate(LessonBase):
-    pass
+    id: Optional[int] = None  # id là tùy chọn, có thể có hoặc không
 
 
 class LessonResponse(LessonBase):

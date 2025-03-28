@@ -20,46 +20,10 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     # Relationships
-    conversations = relationship("Conversation", back_populates="user")
+    qa_session = relationship("Qa_Session", back_populates="user")
 
     def __repr__(self):
         return f"<User(username='{self.username}', email='{self.email}')>"
-
-
-class Conversation(Base):
-    __tablename__ = 'conversations'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    title = Column(String(200), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    lesson_id = Column(Integer, ForeignKey('lessons.id'), nullable=True)
-
-    # Relationships
-    user = relationship("User", back_populates="conversations")
-    messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
-    lesson = relationship("Lesson", back_populates="conversations")
-
-    def __repr__(self):
-        return f"<Conversation(id='{self.id}', user_id='{self.user_id}', title='{self.title}')>"
-
-
-class Message(Base):
-    __tablename__ = 'messages'
-
-    id = Column(Integer, primary_key=True)
-    conversation_id = Column(Integer, ForeignKey('conversations.id'), nullable=False)
-    role = Column(String(20), nullable=False)  # 'user' hoặc 'assistant'
-    content = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    # Relationships
-    conversation = relationship("Conversation", back_populates="messages")
-
-    def __repr__(self):
-        return f"<Message(id='{self.id}', role='{self.role}', content='{self.content[:20]}...')>"
-
 
 class Lesson(Base):
     __tablename__ = 'lessons'
@@ -71,33 +35,44 @@ class Lesson(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    conversations = relationship("Conversation", back_populates="lesson")
+    qa_session = relationship("Qa_Session", back_populates="lesson")
 
     def __repr__(self):
-        return f"<Lesson(id='{self.id}', title='{self.title}')>"
+        return f"<Lesson(id='{self.id}', title='{self.title}', content='{self.content}')>"
+
+class Qa_Message(Base):
+    __tablename__ = 'qa_messages'
+
+    id = Column(Integer, primary_key=True)
+    role = Column(String(20), nullable=False)  # 'user' hoặc 'assistant'
+    content = Column(Text, nullable=False)
+    session_id = Column(Integer, ForeignKey('qa_sessions.id'), nullable=False)
+
+    # Relationships
+    qa_session = relationship("Qa_Session", back_populates="qa_message")
+
+    def __repr__(self):
+        return f"<Message(session_id='{self.session_id}', role='{self.role}', content='{self.content[:20]}...')>"
+
+
+class Qa_Session(Base):
+    __tablename__ = 'qa_sessions'
+    id = Column(String(100), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    lesson_id = Column(Integer, ForeignKey('lessons.id'), nullable=False)
+    histories = Column(Text, ForeignKey('qa_message.content'),nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    #Relationships
+    user = relationship("User", back_populates="qa_session")
+    lesson = relationship("Lesson", back_populates="qa_session")
+    qa_message = relationship("Qa_Message", back_populates="qa_session")
 
 
 # Engine và Session
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-class Token(Base):
-    __tablename__ = 'tokens'
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    access_token: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    token_type: Mapped[str] = mapped_column(String(50), nullable=False)
-    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    is_revoked: Mapped[bool] = mapped_column(Boolean, default=False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
-
-    # Relationship
-    user = relationship("User", back_populates="tokens")
-
-
-# Thêm relationship ngược lại trong User model
-User.tokens = relationship("Token", back_populates="user", cascade="all, delete-orphan")
 
 # Database Dependency
 def get_db():

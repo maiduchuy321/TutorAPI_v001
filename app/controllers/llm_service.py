@@ -1,7 +1,5 @@
 from openai import OpenAI
 from app.config import settings
-from app.models.chat_model import ChatHistory
-
 
 def generate_response(prompt: str,
                       model: str = settings.OPENAI_MODEL,

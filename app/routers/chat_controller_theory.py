@@ -40,7 +40,7 @@ def get_lesson_content_by_id(lesson_id, db):
         # Sử dụng trực tiếp LessonController
         lesson_controller = LessonController(db)
         lesson = lesson_controller.get_lesson(lesson_id)
-        print("Lesson", lesson)
+        # print("Lesson", lesson)
         if lesson:
             # Lưu nội dung vào biến
             content = lesson.content
@@ -90,7 +90,7 @@ async def handle_message(session_id: str, message: MessageRequest, db: Session =
 
     # Tạo prompt
     history = chat_history.get_history()
-    latest_history = REFLECTION(history, last_items_considered=8)
+    latest_history = REFLECTION(history, last_items_considered=12)
     prompt = TheoryPrompt(context=context, history=latest_history).format()
 
     # Gọi LLM API
