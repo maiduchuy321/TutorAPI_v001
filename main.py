@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import conversation, prompt, auth, lesson, chat
-from app.routers import chat_controller, chat_controller_theory
+from app.routers import chat_controller, chat_controller_qa
 from app.models.models import init_db
 from app.models.chat_model import ChatHistory
 
